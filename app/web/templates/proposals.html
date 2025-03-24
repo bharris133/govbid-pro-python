@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Proposals</h2>
+            <button id="add-proposal-btn" class="btn btn-primary">Create New Proposal</button>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped" id="proposals-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Opportunity</th>
+                                <th>Status</th>
+                                <th>Submission Date</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="proposals-table-body">
+                            <tr>
+                                <td colspan="6" class="text-center">Loading proposals...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Proposal Modal -->
+<div class="modal fade" id="proposalModal" tabindex="-1" aria-labelledby="proposalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="proposalModalLabel">Create New Proposal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="proposal-form">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="opportunity_id" class="form-label">Opportunity</label>
+                        <select class="form-select" id="opportunity_id" name="opportunity_id">
+                            <option value="">Select an opportunity</option>
+                            <!-- Options will be populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="draft">Draft</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="review">Under Review</option>
+                            <option value="submitted">Submitted</option>
+                            <option value="won">Won</option>
+                            <option value="lost">Lost</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="submission_date" class="form-label">Submission Date</label>
+                        <input type="date" class="form-control" id="submission_date" name="submission_date">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="save-proposal-btn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        if (!localStorage.getItem('token')) {
+            window.location.href = '/login';
+            return;
+        }
+        
+        const proposalModal = new bootstrap.Modal(document.getElementById('proposalModal'));
+        
+        // Add proposal button click handler
+        document.getElementById('add-proposal-btn').addEventListener('click', function() {
+            document.getElementById('proposal-form').reset();
+            document.getElementById('proposalModalLabel').textContent = 'Create New Proposal';
+            loadOpportunities();
+            proposalModal.show();
+        });
+        
+        // Save proposal button click handler
+        document.getElementById('save-proposal-btn').addEventListener('click', async function() {
+            const form = document.getElementById('proposal-form');
+            const formData = new FormData(form);
+            const proposalData = {};
+            
+            formData.forEach((value, key) => {
+                proposalData[key] = value;
+            });
+            
+            // Add company_id (would come from user's company in a real implementation)
+            proposalData.company_id = 1;
+            
+            try {
+                const token = localStorage.getItem('token');
+                
+                // In a real implementation, we would send this to the API
+                /*
+                const response = await fetch('/api/v1/proposals', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(proposalData)
+                });
+                
+                if (response.ok) {
+                    proposalModal.hide();
+                    loadProposals();
+                } else {
+                    alert('Error saving proposal');
+                }
+                */
+                
+                // For demo purposes, just close the modal and refresh with dummy data
+                proposalModal.hide();
+                loadProposals();
+                
+            } catch (error) {
+                console.error('Save proposal error:', error);
+                alert('Error saving proposal');
+            }
+        });
+        
+        // Load opportunities for the dropdown
+        async function loadOpportunities() {
+            try {
+                const token = localStorage.getItem('token');
+                
+                // In a real implementation, we would fetch from the API
+                /*
+                const response = await fetch('/api/v1/opportunities?status=active', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const opportunities = await response.json();
+                    populateOpportunitiesDropdown(opportunities);
+                }
+                */
+                
+                // For demo purposes, use dummy data
+                const dummyOpportunities = [
+                    {
+                        id: 1,
+                        title: 'IT Support Services - Department of Defense'
+                    },
+                    {
+                        id: 2,
+                        title: 'Cybersecurity Solutions - Department of Homeland Security'
+                    },
+                    {
+                        id: 3,
+                        title: 'Cloud Migration Services - General Services Administration'
+                    },
+                    {
+                        id: 4,
+                        title: 'Healthcare IT Modernization - Department of Health and Human Services'
+                    },
+                    {
+                        id: 5,
+                        title: 'Data Analytics Platform - NASA'
+                    }
+                ];
+                
+                populateOpportunitiesDropdown(dummyOpportunities);
+                
+            } catch (error) {
+                console.error('Load opportunities error:', error);
+            }
+        }
+        
+        // Populate opportunities dropdown
+        function populateOpportunitiesDropdown(opportunities) {
+            const dropdown = document.getElementById('opportunity_id');
+            
+            // Clear existing options except the first one
+            while (dropdown.options.length > 1) {
+                dropdown.remove(1);
+            }
+            
+            // Add new options
+            opportunities.forEach(opportunity => {
+                const option = document.createElement('option');
+                option.value = opportunity.id;
+                option.textContent = opportunity.title;
+                dropdown.appendChild(option);
+            });
+        }
+        
+        // Load proposals function
+        async function loadProposals() {
+            try {
+                const token = localStorage.getItem('token');
+                
+                // In a real implementation, we would fetch from the API
+                /*
+                const response = await fetch('/api/v1/proposals', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const proposals = await response.json();
+                    renderProposals(proposals);
+                }
+                */
+                
+                // For demo purposes, use dummy data
+                const dummyProposals = [
+                    {
+                        id: 1,
+                        title: 'DOD IT Support Proposal',
+                        opportunity: 'IT Support Services - Department of Defense',
+                        status: 'draft',
+                        submission_date: '2025-04-10',
+                        created_at: '2025-03-15'
+                    },
+                    {
+                        id: 2,
+                        title: 'DHS Cybersecurity Proposal',
+                        opportunity: 'Cybersecurity Solutions - Department of Homeland Security',
+                        status: 'in_progress',
+                        submission_date: '2025-04-25',
+                        created_at: '2025-03-18'
+                    },
+                    {
+                        id: 3,
+                        title: 'GSA Cloud Migration Proposal',
+                        opportunity: 'Cloud Migration Services - General Services Administration',
+                        status: 'review',
+                        submission_date: '2025-04-20',
+                        created_at: '2025-03-10'
+                    }
+                ];
+                
+                renderProposals(dummyProposals);
+                
+            } catch (error) {
+                console.error('Load proposals error:', error);
+            }
+        }
+        
+        // Render proposals function
+        function renderProposals(proposals) {
+            const tableBody = document.getElementById('proposals-table-body');
+            
+            if (proposals.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No proposals found</td></tr>';
+                return;
+            }
+            
+            tableBody.innerHTML = '';
+            
+            proposals.forEach(proposal => {
+                const row = document.createElement('tr');
+                
+                // Get status badge color
+                let statusBadgeClass = 'bg-secondary';
+                switch (proposal.status) {
+                    case 'draft': statusBadgeClass = 'bg-secondary'; break;
+                    case 'in_progress': statusBadgeClass = 'bg-primary'; break;
+                    case 'review': statusBadgeClass = 'bg-info'; break;
+                    case 'submitted': statusBadgeClass = 'bg-warning'; break;
+                    case 'won': statusBadgeClass = 'bg-success'; break;
+                    case 'lost': statusBadgeClass = 'bg-danger'; break;
+                }
+                
+                row.innerHTML = `
+                    <td>${proposal.title}</td>
+                    <td>${proposal.opportunity || '-'}</td>
+                    <td><span class="badge ${statusBadgeClass}">${proposal.status.replace('_', ' ')}</span></td>
+                    <td>${proposal.submission_date ? new Date(proposal.submission_date).toLocaleDateString() : '-'}</td>
+                    <td>${new Date(proposal.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary edit-btn" data-id="${proposal.id}">Edit</button>
+                        <button class="btn btn-sm btn-outline-success sections-btn" data-id="${proposal.id}">Sections</button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Add event listeners to buttons
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    alert(`Edit proposal ${id} (not implemented in demo)`);
+                });
+            });
+            
+            document.querySelectorAll('.sections-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    alert(`Manage sections for proposal ${id} (not implemented in demo)`);
+                });
+            });
+        }
+        
+        // Initial load
+        loadProposals();
+    });
+</script>
+{% endblock %}

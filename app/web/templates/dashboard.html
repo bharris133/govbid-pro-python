@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Dashboard</h2>
+        <div class="alert alert-info" role="alert">
+            Welcome to your GovBid Pro dashboard!
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                Opportunities
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Active Opportunities</h5>
+                <p class="card-text">You have <span id="active-opportunities-count">0</span> active opportunities.</p>
+                <a href="/opportunities" class="btn btn-primary">View Opportunities</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                Proposals
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Draft Proposals</h5>
+                <p class="card-text">You have <span id="draft-proposals-count">0</span> proposals in draft.</p>
+                <a href="/proposals" class="btn btn-primary">View Proposals</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                Upcoming Deadlines
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Due Soon</h5>
+                <p class="card-text">You have <span id="upcoming-deadlines-count">0</span> deadlines in the next 7 days.</p>
+                <a href="#" class="btn btn-primary">View Calendar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                Recent Activity
+            </div>
+            <div class="card-body">
+                <div id="activity-feed">
+                    <p class="text-muted">Loading activity...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                Quick Actions
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/opportunities/new" class="btn btn-outline-primary">Add Opportunity</a>
+                    <a href="/proposals/new" class="btn btn-outline-primary">Create Proposal</a>
+                    <a href="/search" class="btn btn-outline-primary">Search Subcontractors</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // This would be replaced with actual API calls in a production environment
+    document.addEventListener('DOMContentLoaded', async function() {
+        if (!localStorage.getItem('token')) {
+            window.location.href = '/login';
+            return;
+        }
+        
+        try {
+            // Fetch dashboard data
+            const token = localStorage.getItem('token');
+            
+            // Example of how we would fetch data from our API
+            /*
+            const opportunitiesResponse = await fetch('/api/v1/opportunities?status=active', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (opportunitiesResponse.ok) {
+                const opportunities = await opportunitiesResponse.json();
+                document.getElementById('active-opportunities-count').textContent = opportunities.length;
+            }
+            
+            const proposalsResponse = await fetch('/api/v1/proposals?status=draft', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (proposalsResponse.ok) {
+                const proposals = await proposalsResponse.json();
+                document.getElementById('draft-proposals-count').textContent = proposals.length;
+            }
+            */
+            
+            // For demo purposes, we'll just set some placeholder values
+            document.getElementById('active-opportunities-count').textContent = '5';
+            document.getElementById('draft-proposals-count').textContent = '3';
+            document.getElementById('upcoming-deadlines-count').textContent = '2';
+            
+            // Populate activity feed with dummy data
+            const activityFeed = document.getElementById('activity-feed');
+            activityFeed.innerHTML = `
+                <div class="activity-item mb-3">
+                    <div class="d-flex justify-content-between">
+                        <strong>New opportunity added</strong>
+                        <small class="text-muted">Today, 10:23 AM</small>
+                    </div>
+                    <p>Department of Defense RFP for IT Services</p>
+                </div>
+                <div class="activity-item mb-3">
+                    <div class="d-flex justify-content-between">
+                        <strong>Proposal updated</strong>
+                        <small class="text-muted">Yesterday, 3:45 PM</small>
+                    </div>
+                    <p>GSA Schedule 70 Proposal - Technical Section</p>
+                </div>
+                <div class="activity-item mb-3">
+                    <div class="d-flex justify-content-between">
+                        <strong>Deadline approaching</strong>
+                        <small class="text-muted">2 days ago</small>
+                    </div>
+                    <p>NASA SEWP Proposal due in 5 days</p>
+                </div>
+            `;
+            
+        } catch (error) {
+            console.error('Dashboard error:', error);
+        }
+    });
+</script>
+{% endblock %}
