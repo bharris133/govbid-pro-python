@@ -70,8 +70,17 @@ class OpportunityBase(BaseModel):
 class OpportunityCreate(OpportunityBase):
     pass
 
-class OpportunityUpdate(OpportunityBase):
-    pass
+class OpportunityUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    agency: Optional[str] = None
+    solicitation_number: Optional[str] = None
+    naics_code: Optional[str] = None
+    posted_date: Optional[datetime] = None
+    due_date: Optional[datetime] = None
+    url: Optional[str] = None
+    status: Optional[str] = None
+    estimated_value: Optional[float] = None
 
 class OpportunityInDBBase(OpportunityBase):
     id: int
@@ -94,8 +103,12 @@ class ProposalBase(BaseModel):
 class ProposalCreate(ProposalBase):
     pass
 
-class ProposalUpdate(ProposalBase):
-    pass
+class ProposalUpdate(BaseModel):
+    title: Optional[str] = None
+    opportunity_id: Optional[int] = None
+    company_id: Optional[int] = None
+    status: Optional[str] = None
+    submission_date: Optional[datetime] = None
 
 class ProposalInDBBase(ProposalBase):
     id: int

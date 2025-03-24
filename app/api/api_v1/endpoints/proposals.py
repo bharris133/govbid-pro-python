@@ -5,8 +5,9 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_active_user
 from app.db.base import get_db
-from app.models.models import Proposal, User
-from app.schemas.schemas import Proposal as ProposalSchema, ProposalCreate, ProposalUpdate
+# For proposals.py
+from app.models.models import Proposal, User, Company, Opportunity
+from app.schemas.schemas import ProposalCreate, ProposalUpdate, Proposal as ProposalSchema
 
 router = APIRouter()
 
@@ -76,6 +77,9 @@ def read_proposal(
     return proposal
 
 
+# app/api/api_v1/endpoints/proposals.py
+# Find the update_proposal function and make similar changes
+
 @router.put("/{proposal_id}", response_model=ProposalSchema)
 def update_proposal(
     *,
@@ -83,7 +87,7 @@ def update_proposal(
     proposal_id: int,
     proposal_in: ProposalUpdate,
     current_user: User = Depends(get_current_active_user),
-) -> Any:
+):
     """
     Update a proposal.
     """
@@ -91,10 +95,7 @@ def update_proposal(
     if not proposal:
         raise HTTPException(status_code=404, detail="Proposal not found")
     
-    # Check if user has access to this proposal
-    if not current_user.is_superuser and proposal.company_id != current_user.company_id:
-        raise HTTPException(status_code=403, detail="Not enough permissions")
-    
+    # Update only the fields that are provided
     update_data = proposal_in.dict(exclude_unset=True)
     for field, value in update_data.items():
         setattr(proposal, field, value)
@@ -103,6 +104,7 @@ def update_proposal(
     db.commit()
     db.refresh(proposal)
     return proposal
+
 
 
 @router.delete("/{proposal_id}", response_model=ProposalSchema)

@@ -4,10 +4,12 @@ from datetime import datetime
 
 class Settings(BaseModel):
     API_V1_STR: str = "/api/v1"
-    SECRET_KEY: str = "YOUR_SECRET_KEY_HERE"  # In production, use a secure random key
+    SECRET_KEY: str = "me@$1Tim3"  # In production, use a secure random key
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 days
     SQLALCHEMY_DATABASE_URI: str = "sqlite:///./govbid_pro.db"
     PROJECT_NAME: str = "GovBid Pro"
+    PROJECT_DESCRIPTION: str = "Proposal writer for government contracts"
+    VERSION: str = "1.0.0"  # Add the VERSION attribute
     
     # CORS settings
     CORS_ORIGINS: List[str] = ["http://localhost", "http://localhost:8000", "http://localhost:3000"]
